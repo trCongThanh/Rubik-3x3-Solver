@@ -1,0 +1,195 @@
+.face__set--section {
+    height: 100vh;
+    width: 100%;
+    background: radial-gradient(circle, #A5EBE9, #4CA9B6); 
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    /* Căn giữa toàn bộ nội dung theo chiều dọc/ngang */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.instructions {
+    color: #2F2F31;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* --- Palette (Bảng màu) --- */
+.palette {
+    margin-bottom: 2rem;
+    background: rgba(255,255,255,0.8);
+    padding: 10px;
+    border-radius: 50px;
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.palette__item {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.2s;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.2);
+}
+.palette__item:hover { transform: scale(1.1); }
+.palette__item.active { border-color: #333; transform: scale(1.15); }
+
+/* Màu sắc cho bảng chọn */
+.palette__item.green { background-color: #009E60; }
+.palette__item.red { background-color: #C41E3A; }
+.palette__item.white { background-color: #FFFFFF; border: 1px solid #ccc; }
+.palette__item.yellow { background-color: #FFD500; }
+.palette__item.orange { background-color: #FF5800; }
+.palette__item.blue { background-color: #0051BA; }
+
+/* --- 3D Cube Container --- */
+.cube3d__container {
+    width: 300px;
+    height: 300px;
+    perspective: 1000px;
+    margin-bottom: 2rem; /* Tạo khoảng cách với nút bấm */
+}
+
+.scene3d {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pivot3d {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    transform-style: preserve-3d;
+    transition: transform 0.1s linear; /* Xoay mượt khi kéo chuột */
+}
+
+/* --- Định nghĩa các mặt (Faces) --- */
+.face3d {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: black; /* Màu nền đen đóng vai trò là viền giữa các ô */
+    display: flex;
+    flex-wrap: wrap;
+    /* FIX QUAN TRỌNG: Bỏ border để không bị tính sai kích thước */
+    border: none; 
+    box-sizing: border-box;
+    /* Căn giữa sticker bên trong */
+    align-content: flex-start; 
+}
+
+/* Vị trí các mặt trong không gian 3D */
+/* TranslateZ = 75px (một nửa của 150px) */
+.face3d.front  { transform: rotateY(0deg) translateZ(75px); }
+.face3d.back   { transform: rotateY(180deg) translateZ(75px); }
+.face3d.right  { transform: rotateY(90deg) translateZ(75px); }
+.face3d.left   { transform: rotateY(-90deg) translateZ(75px); }
+.face3d.top    { transform: rotateX(90deg) translateZ(75px); }
+.face3d.bottom { transform: rotateX(-90deg) translateZ(75px); }
+
+/* --- Stickers (Các ô màu nhỏ) --- */
+.face3d__sticker {
+    /* FIX QUAN TRỌNG: 
+       Tổng width = 48px + 1px margin trái + 1px margin phải = 50px
+       50px * 3 ô = 150px (Khớp hoàn toàn với width của face3d)
+    */
+    width: 48px;
+    height: 48px;
+    margin: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2); /* Tạo chiều sâu nhẹ */
+    transition: opacity 0.1s;
+}
+
+.face3d__sticker:hover {
+    opacity: 0.8;
+}
+
+/* Màu sắc hiển thị trên Rubik */
+.face3d__sticker.green { background-color: #009E60; }
+.face3d__sticker.red { background-color: #C41E3A; }
+.face3d__sticker.white { background-color: #f0f0f0; }
+.face3d__sticker.yellow { background-color: #FFD500; }
+.face3d__sticker.orange { background-color: #FF5800; }
+.face3d__sticker.blue { background-color: #0051BA; }
+
+/* Dấu chấm tâm để biết mặt nào là trung tâm */
+.center-dot {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0,0,0,0.3) 10%, transparent 10.1%);
+}
+
+/* --- Buttons --- */
+.controls {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.scramble__btn {
+    height: 40px;
+    width: 150px;
+    background-color: #FF9800;
+    color: white;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+.scramble__btn:hover { 
+    background-color: #e68900; 
+    transform: translateY(-2px);
+}
+.reset__btn {
+    height: 40px;
+    width: 150px;
+    background-color: #7e92ff;
+    color: white;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+.reset__btn:hover { 
+    background-color: #7e92ff; 
+    transform: translateY(-2px);
+}
+.color__set--btn {
+    position: static; /* Reset lại vị trí tuyệt đối từ code cũ */
+    transform: none;
+    height: 40px;
+    width: 150px;
+    background-color: #F8437C;
+    color: white;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+.color__set--btn:hover {
+    background-color: rgb(255, 28, 100);
+    transform: translateY(-2px);
+}

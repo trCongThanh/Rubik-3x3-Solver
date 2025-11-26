@@ -1,0 +1,375 @@
+/* REVISED STYLE - Updated with New Logic */
+
+html,
+body {
+	height: 100%;
+	overflow: hidden;
+	background-color: #FDFDFD;
+}
+
+.cube__container {
+	height: 100%;
+	width: 100%;
+	background: radial-gradient(circle, #A5EBE9, #4CA9B6); 
+	cursor: grab; /* Camera control */
+}
+
+.cube__container:active {
+	cursor: grabbing;
+}
+
+.cube__container.solver__active {
+	transform: translateY(0px);
+}
+
+/* UI Elements */
+.step__count {
+	width: 160px;
+	height: 40px;
+	border-radius: 50px;
+	background-color: #D4EDDA;
+	border: 2px solid #C3E6CB;
+	color: black;
+	position: absolute;
+	top: 0.7rem;
+	left: 1rem;
+	font-size: 21px;
+	text-align: left;
+	opacity: 0;
+	z-index: 10;
+}
+
+.step__count.active {
+	opacity: 1;
+}
+
+.move__name {
+	color: black;
+	position: absolute;
+	top: 1rem;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 27px;
+	font-weight: 600;
+	z-index: 10;
+}
+
+.moves__num {
+	color: #155724;
+	background-color: #D4EDDA;
+	border: 1px solid #C3E6CB;
+	width: 40%;
+	padding: 10px;
+	font-size: 19px;
+	position: absolute;
+	top: 3.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 5px;
+	font-weight: 500;
+	opacity: 0;
+	z-index: 10;
+}
+
+.moves__num.active {
+	opacity: 1;
+}
+
+.scramble__error {
+	color: #721C24;
+	background-color: #F8D7DA;
+	border: 1px solid #F5C6CB;
+	width: 40%;
+	padding: 10px;
+	font-size: 19px;
+	position: absolute;
+	top: 3.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 5px;
+	font-weight: 500;
+	opacity: 0;
+	z-index: 10;
+}
+
+.scramble__error.active {
+	opacity: 1;
+}
+
+.retry__btn--scramble {
+	background-color: #D1ECF1;
+	color: #115460;
+	height: 40px;
+	width: 100px;
+	font-size: 17px;
+	border-radius: 25px;
+	padding: 0;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 7rem;
+	border: 1px solid #66c4d3;
+	filter: drop-shadow(0px 10px 10px #397e8742);
+	z-index: 10;
+	opacity: 0;
+}
+
+.retry__btn--scramble:hover {
+	background-color: #c8e9ee;
+	filter: drop-shadow(0px 10px 10px #397e8782);
+}
+
+.retry__btn--scramble.active {
+	opacity: 1;
+}
+
+.credits {
+	width: 100%;
+	top: 90%;
+}
+
+.text {
+	text-align: center;
+	font-family: Helvetica;
+	font-size: .8rem;
+	color: grey;
+	pointer-events: none;
+}
+
+/* 3D Scene Setup */
+.centered {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+}
+
+.scene {
+	width: 100%;
+	height: 100%;
+	perspective: 1200px;
+	transform-style: preserve-3d;
+}
+
+/* NEW: Camera View Wrapper */
+.camera__view {
+	width: 100%;
+	height: 100%;
+	transform-style: preserve-3d;
+	position: absolute;
+	top: 0;
+	left: 0;
+	transition: transform 0.1s linear;
+}
+
+/* Pivot for cube rotation */
+.pivot {
+	width: 0;
+	height: 0;
+	transition: 0.3s;
+	transform-style: preserve-3d;
+}
+
+.scene div {
+	position: absolute;
+	transform-style: inherit;
+}
+
+/* Cube Structure */
+.cube {
+	font-size: 190%;
+	margin-left: -1em;
+	margin-top: -1em;
+}
+
+.cube > .piece {
+	width: 1.9em;
+	height: 1.9em;
+	background-color: #2F2F31;
+}
+
+.cube > .piece > .element {
+	width: 100%;
+	height: 100%;
+	background: #0A0A0A;
+	outline: 1px solid transparent;
+	border: 0.05em solid #0A0A0A;
+	border-radius: 10%;
+}
+
+/* Cube Face Positions */
+.cube > .piece > .element.left {
+	transform: rotateX(0deg) rotateY(-90deg) rotateZ(180deg) translateZ(1em);
+}
+
+.cube > .piece > .element.right {
+	transform: rotateX(0deg) rotateY(90deg) rotateZ(90deg) translateZ(1em);
+}
+
+.cube > .piece > .element.back {
+	transform: rotateX(0deg) rotateY(180deg) rotateZ(-90deg) translateZ(1em);
+}
+
+.cube > .piece > .element.front {
+	transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(1em);
+}
+
+.cube > .piece > .element.bottom {
+	transform: rotateX(-90deg) rotateY(0deg) rotateZ(-90deg) translateZ(1em);
+}
+
+.cube > .piece > .element.top {
+	transform: rotateX(90deg) rotateY(0deg) rotateZ(180deg) translateZ(1em);
+}
+
+/* Sticker Styling */
+.cube > .piece > .element > .sticker {
+	transform: translateZ(2px);
+	width: 95%;
+	height: 95%;
+	border-radius: 10%;
+	outline: 1px solid transparent;
+	box-shadow: inset 0.05em 0.05em 0.2rem 0 rgba(255, 255, 255, 0.25), 
+	            inset -0.05em -0.05em 0.2rem 0 rgba(0, 0, 0, 0.25);
+}
+
+.cube > .piece > .element > .sticker.blue {
+	background-color: #4fa3df;
+}
+
+.cube > .piece > .element > .sticker.green {
+	background-color: #79D01E;
+}
+
+.cube > .piece > .element > .sticker.white {
+	background-color: #e8e8f0;
+}
+
+.cube > .piece > .element > .sticker.yellow {
+	background-color: #F1FD3D;
+}
+
+.cube > .piece > .element > .sticker.orange {
+	background-color: #eb7d15;
+}
+
+.cube > .piece > .element > .sticker.red {
+	background-color: #cd2e19;
+}
+
+/* Control Buttons */
+.next__move--btn, 
+.repeat__btn, 
+.previous__btn, 
+.replay__btn,
+.auto__run--btn {
+	height: 40px;
+	width: 150px;
+	background-color: #F8437C;
+	border-color: transparent;
+	border-radius: 50px;
+	font-size: large;
+	font-weight: medium;
+	filter: drop-shadow(0px 10px 10px #489da9);
+	transition: all 0.15s ease-in;
+	position: absolute;
+	bottom: 2rem;
+	border: 1px solid grey;
+	z-index: 20;
+	cursor: pointer;
+}
+
+.previous__btn {
+	left: 3rem;
+}
+
+.repeat__btn {
+	background-color: #1D1D20;
+	left: 15rem;
+}
+
+.next__move--btn {
+	left: 27rem;
+}
+
+/* NEW: Auto Run Button */
+.auto__run--btn {
+	left: 39rem;
+}
+
+.auto__run--btn.active {
+	background-color: #FF9800;
+	filter: drop-shadow(0px 0px 10px #ff9800);
+}
+
+.replay__btn {
+	opacity: 0;
+	right: 3rem;
+}
+
+.replay__btn.active {
+	opacity: 1;
+	animation-name: shake;
+	animation-duration: 0.8s;
+	animation-delay: 0.5s;
+	animation-timing-function: ease-out;
+	animation-fill-mode: forwards;
+	animation-iteration-count: infinite;
+}
+
+/* Button Hover States */
+.next__move--btn:hover, 
+.repeat__btn:hover, 
+.previous__btn:hover, 
+.replay__btn:hover,
+.auto__run--btn:hover {
+	background-color: rgb(255, 28, 100);
+	filter: drop-shadow(0px 10px 10px #397e87);
+}
+
+.repeat__btn:hover {
+	background-color: #383839;
+}
+
+/* Button Disabled States */
+.next__move--btn:disabled, 
+.repeat__btn:disabled, 
+.previous__btn:disabled {
+	background-color: rgb(169, 169, 169);
+	cursor: default;
+}
+
+.next__move--btn:disabled:hover, 
+.repeat__btn:disabled:hover, 
+.previous__btn:disabled:hover {
+	background-color: rgb(169, 169, 169);
+	filter: drop-shadow(0px 10px 10px #489da9);
+}
+
+/* Animations */
+@keyframes shake {
+	from { transform: scale(1) rotate(0deg); }
+	20% { transform: scale(1) rotate(0deg); }
+	40% { transform: scale(1) rotate(-20deg); }
+	60% { transform: scale(1) rotate(20deg); }
+	80% { transform: scale(1) rotate(0deg); }
+	to { transform: scale(1) rotate(0deg); }
+}
+
+#pivot {
+	transition: all 0.5s ease-in-out;
+}
+
+#pivot.active {
+	animation-name: rotate;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	animation-duration: 7s;
+}
+
+@keyframes rotate {
+	0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+	100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
